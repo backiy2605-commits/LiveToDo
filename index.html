@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiveToDo – Your Freelance Command Center</title>
+  <meta name="description" content="LiveToDo is your personal freelance work tracker. Manage clients, payments, projects, and daily progress all in one place." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <!-- Ambient Background -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-blob blob-3"></div>
+  <div class="ember-sparks" id="emberSparks"></div>
+
+  <!-- ==================== LOGIN SCREEN ==================== -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-logo-icon">
+          <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="11" height="11" rx="3" fill="url(#lgl1)"/>
+            <rect x="15" y="2" width="11" height="11" rx="3" fill="url(#lgl1)" opacity="0.6"/>
+            <rect x="2" y="15" width="11" height="11" rx="3" fill="url(#lgl1)" opacity="0.6"/>
+            <rect x="15" y="15" width="11" height="11" rx="3" fill="url(#lgl1)"/>
+            <defs>
+              <linearGradient id="lgl1" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#fb923c"/>
+                <stop offset="1" stop-color="#f43f5e"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="login-logo-text">Live<span>ToDo</span></span>
+      </div>
+      <h1 class="login-title">Welcome back,<br/>Freelancer 👋</h1>
+      <p class="login-sub">Your personal command center for managing clients, projects & payments — all in one place.</p>
+
+      <div class="login-features">
+        <div class="lf-item"><span class="lf-dot"></span>Track multiple freelance categories</div>
+        <div class="lf-item"><span class="lf-dot"></span>Manage clients & pending payments</div>
+        <div class="lf-item"><span class="lf-dot"></span>Plan your month, week by week</div>
+        <div class="lf-item"><span class="lf-dot"></span>Daily to-do board, always synced</div>
+      </div>
+
+      <!-- Google Sign-In Button -->
+      <div class="g-signin-wrap" id="gSigninContainer">
+        <div id="g_id_onload"
+          data-client_id="YOUR_GOOGLE_CLIENT_ID"
+          data-callback="handleGoogleSignIn"
+          data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+          data-type="standard"
+          data-size="large"
+          data-theme="filled_black"
+          data-text="signin_with"
+          data-shape="rectangular"
+          data-logo_alignment="left"
+          data-width="340">
+        </div>
+      </div>
+
+      <!-- Demo mode (works instantly without setup) -->
+      <div class="login-divider"><span>or</span></div>
+      <button class="btn-demo" onclick="signInAsDemo()">
+        <span>🚀</span> Continue as Demo User
+      </button>
+
+      <p class="login-note">
+        <b>Deploying to Vercel:</b> Connect your Google Client ID and MongoDB Atlas URI to auto-sync your data across all devices. See <code>DEPLOY_TO_VERCEL.md</code>.
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN APP ==================== -->
+  <div class="app-container" id="appContainer" style="display:none;">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="11" height="11" rx="3" fill="url(#lg1)"/>
+            <rect x="15" y="2" width="11" height="11" rx="3" fill="url(#lg1)" opacity="0.6"/>
+            <rect x="2" y="15" width="11" height="11" rx="3" fill="url(#lg1)" opacity="0.6"/>
+            <rect x="15" y="15" width="11" height="11" rx="3" fill="url(#lg1)"/>
+            <defs>
+              <linearGradient id="lg1" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#fb923c"/><stop offset="1" stop-color="#f43f5e"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">Live<span>ToDo</span></span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+          <span class="nav-icon">⚡</span><span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="projects" onclick="switchView('projects')">
+          <span class="nav-icon">🗂️</span><span>Projects</span>
+        </button>
+        <button class="nav-item" data-view="clients" onclick="switchView('clients')">
+          <span class="nav-icon">👥</span><span>Clients</span>
+        </button>
+        <button class="nav-item" data-view="payments" onclick="switchView('payments')">
+          <span class="nav-icon">💰</span><span>Payments</span>
+        </button>
+        <button class="nav-item" data-view="planner" onclick="switchView('planner')">
+          <span class="nav-icon">📅</span><span>Monthly Plan</span>
+        </button>
+        <button class="nav-item" data-view="todos" onclick="switchView('todos')">
+          <span class="nav-icon">✅</span><span>Daily Todos</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="today-date" id="todayDate"></div>
+        <!-- User Profile Card -->
+        <div class="sidebar-profile" id="sidebarProfile">
+          <div class="sp-avatar-wrap">
+            <img class="sp-avatar" id="spAvatar" src="" alt="" onerror="this.style.display='none';document.getElementById('spAvatarFallback').style.display='flex'" />
+            <div class="sp-avatar-fallback" id="spAvatarFallback">F</div>
+          </div>
+          <div class="sp-info">
+            <span class="sp-name" id="spName">Freelancer</span>
+            <span class="sp-email" id="spEmail">demo@livetodo.app</span>
+          </div>
+          <button class="sp-menu-btn" onclick="toggleProfileMenu()" title="Profile options">⋮</button>
+        </div>
+        <div class="profile-menu" id="profileMenu">
+          <button class="profile-menu-item" onclick="openModal('profileModal')">✏️ Edit Profile</button>
+          <button class="profile-menu-item sign-out-btn" onclick="signOut()">🚪 Sign Out</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile hamburger -->
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ===== DASHBOARD VIEW ===== -->
+      <div class="view active" id="view-dashboard">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" id="dashTitle">Command Center ⚡</h1>
+            <p class="page-sub" id="greetingText"></p>
+          </div>
+          <div class="header-actions">
+            <div class="cloud-sync-badge" id="cloudSyncBadge" title="Cloud Database Sync Status">
+              <span class="sync-dot"></span>
+              <span class="sync-text" id="cloudSyncText">Cloud Ready</span>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('addProjectModal')">+ New Project</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card stat-orange">
+            <div class="stat-icon">🗂️</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-projects">0</div>
+              <div class="stat-label">Active Projects</div>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card stat-coral">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-clients">0</div>
+              <div class="stat-label">Total Clients</div>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card stat-amber">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-pending">₹0</div>
+              <div class="stat-label">Pending Payments</div>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card stat-green">
+            <div class="stat-icon">💸</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-earned">₹0</div>
+              <div class="stat-label">Total Earned</div>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+        </div>
+
+        <div class="dashboard-split">
+          <div class="glass-card">
+            <div class="card-header">
+              <h2>Recent Projects</h2>
+              <button class="btn-link" onclick="switchView('projects')">View All →</button>
+            </div>
+            <div class="project-list" id="recentProjectsList">
+              <div class="empty-state">No projects yet. Click <b>+ New Project</b> to start!</div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div class="card-header">
+              <h2>Today's Focus</h2>
+              <button class="btn-link" onclick="switchView('todos')">All Todos →</button>
+            </div>
+            <div class="quick-todo-area">
+              <div class="quick-add-row">
+                <input class="quick-input" type="text" id="quickTodoInput" placeholder="Add a quick task..." onkeydown="quickAddTodo(event)" />
+                <button class="btn btn-sm btn-primary" onclick="quickAddTodoBtn()">Add</button>
+              </div>
+              <div class="todo-list" id="dashboardTodoList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card mt-16">
+          <div class="card-header">
+            <h2>Payment Overview</h2>
+            <button class="btn-link" onclick="switchView('payments')">Manage →</button>
+          </div>
+          <div class="payment-overview" id="dashboardPaymentList">
+            <div class="empty-state">No payments recorded yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROJECTS VIEW ===== -->
+      <div class="view" id="view-projects">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Projects 🗂️</h1>
+            <p class="page-sub">Manage all your freelance work</p>
+          </div>
+          <div class="header-actions">
+            <div class="filter-tabs" id="categoryFilter">
+              <button class="filter-tab active" data-cat="all" onclick="filterProjects('all')">All</button>
+              <button class="filter-tab" data-cat="editing" onclick="filterProjects('editing')">✂️ Editing</button>
+              <button class="filter-tab" data-cat="website" onclick="filterProjects('website')">🌐 Website</button>
+              <button class="filter-tab" data-cat="reels" onclick="filterProjects('reels')">🎬 Reels</button>
+              <button class="filter-tab" data-cat="other" onclick="filterProjects('other')">📦 Other</button>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('addProjectModal')">+ Add Project</button>
+          </div>
+        </div>
+        <div class="projects-grid" id="projectsGrid">
+          <div class="empty-state full-width">No projects yet. Add your first one!</div>
+        </div>
+      </div>
+
+      <!-- ===== CLIENTS VIEW ===== -->
+      <div class="view" id="view-clients">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Clients 👥</h1>
+            <p class="page-sub">All your client relationships</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('addClientModal')">+ Add Client</button>
+          </div>
+        </div>
+        <div class="clients-grid" id="clientsGrid">
+          <div class="empty-state full-width">No clients yet. Add your first client!</div>
+        </div>
+      </div>
+
+      <!-- ===== PAYMENTS VIEW ===== -->
+      <div class="view" id="view-payments">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Payments 💰</h1>
+            <p class="page-sub">Track earnings & pending amounts</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('addPaymentModal')">+ Log Payment</button>
+          </div>
+        </div>
+        <div class="payment-summary-row">
+          <div class="pay-sum-card pay-pending">
+            <div class="pay-sum-label">⏳ Pending</div>
+            <div class="pay-sum-val" id="totalPending">₹0</div>
+          </div>
+          <div class="pay-sum-card pay-received">
+            <div class="pay-sum-label">✅ Received</div>
+            <div class="pay-sum-val" id="totalReceived">₹0</div>
+          </div>
+          <div class="pay-sum-card pay-total">
+            <div class="pay-sum-label">💼 Total Billed</div>
+            <div class="pay-sum-val" id="totalBilled">₹0</div>
+          </div>
+        </div>
+        <div class="glass-card mt-16">
+          <div class="payment-table-wrap">
+            <table class="payment-table">
+              <thead>
+                <tr>
+                  <th>Client</th><th>Project</th><th>Amount</th>
+                  <th>Status</th><th>Due Date</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTableBody">
+                <tr><td colspan="6" class="empty-state">No payments logged yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MONTHLY PLANNER VIEW ===== -->
+      <div class="view" id="view-planner">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Monthly Plan 📅</h1>
+            <p class="page-sub">Plan your freelance work for the month</p>
+          </div>
+          <div class="header-actions">
+            <div class="month-nav">
+              <button class="btn btn-ghost" onclick="changeMonth(-1)">‹</button>
+              <span id="currentMonthLabel"></span>
+              <button class="btn btn-ghost" onclick="changeMonth(1)">›</button>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('addPlanModal')">+ Add Plan</button>
+          </div>
+        </div>
+        <div class="planner-grid" id="plannerGrid"></div>
+      </div>
+
+      <!-- ===== DAILY TODOS VIEW ===== -->
+      <div class="view" id="view-todos">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Daily Todos ✅</h1>
+            <p class="page-sub">Your tasks, organized by category</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('addTodoModal')">+ Add Task</button>
+          </div>
+        </div>
+        <div class="todo-columns">
+          <div class="todo-col">
+            <div class="todo-col-header editing-header">✂️ Editing</div>
+            <div class="todo-col-body" id="todos-editing"></div>
+            <button class="add-in-col-btn" onclick="openTodoModal('editing')">+ Add Task</button>
+          </div>
+          <div class="todo-col">
+            <div class="todo-col-header website-header">🌐 Website</div>
+            <div class="todo-col-body" id="todos-website"></div>
+            <button class="add-in-col-btn" onclick="openTodoModal('website')">+ Add Task</button>
+          </div>
+          <div class="todo-col">
+            <div class="todo-col-header reels-header">🎬 Reels</div>
+            <div class="todo-col-body" id="todos-reels"></div>
+            <button class="add-in-col-btn" onclick="openTodoModal('reels')">+ Add Task</button>
+          </div>
+          <div class="todo-col">
+            <div class="todo-col-header other-header">📦 Other</div>
+            <div class="todo-col-body" id="todos-other"></div>
+            <button class="add-in-col-btn" onclick="openTodoModal('other')">+ Add Task</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- end app-container -->
+
+  <!-- ============ MODALS ============ -->
+
+  <!-- Profile Modal -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>✏️ Edit Profile</h3>
+        <button class="modal-close" onclick="closeModal('profileModal')">✕</button>
+      </div>
+      <div class="modal-body" style="align-items:center;">
+        <div class="profile-avatar-big" id="profileAvatarBig">F</div>
+        <div class="form-group" style="width:100%;">
+          <label>Display Name</label>
+          <input type="text" id="edit-name" placeholder="Your name" />
+        </div>
+        <div class="form-group" style="width:100%;">
+          <label>Role / Title</label>
+          <input type="text" id="edit-role" placeholder="e.g. Freelancer · Video Editor · Web Dev" />
+        </div>
+        <div class="form-group" style="width:100%;">
+          <label>Currency Symbol</label>
+          <select id="edit-currency">
+            <option value="₹">₹ Indian Rupee</option>
+            <option value="$">$ US Dollar</option>
+            <option value="€">€ Euro</option>
+            <option value="£">£ British Pound</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('profileModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  <div class="modal-overlay" id="addProjectModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🗂️ New Project</h3>
+        <button class="modal-close" onclick="closeModal('addProjectModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Project Name</label>
+          <input type="text" id="proj-name" placeholder="e.g. YouTube Reels for Alex" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="proj-cat">
+              <option value="editing">✂️ Editing</option>
+              <option value="website">🌐 Website Making</option>
+              <option value="reels">🎬 Reels / YouTube</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="proj-status">
+              <option value="inprogress">In Progress</option>
+              <option value="pending">Pending Start</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Client</label>
+            <select id="proj-client"><option value="">-- No Client --</option></select>
+          </div>
+          <div class="form-group">
+            <label>Budget</label>
+            <input type="number" id="proj-budget" placeholder="e.g. 5000" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Deadline</label>
+          <input type="date" id="proj-deadline" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="proj-desc" placeholder="What does this project involve?"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('addProjectModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addProject()">Create Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Client Modal -->
+  <div class="modal-overlay" id="addClientModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>👤 New Client</h3>
+        <button class="modal-close" onclick="closeModal('addClientModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Client Name</label>
+            <input type="text" id="client-name" placeholder="e.g. Alex Johnson" />
+          </div>
+          <div class="form-group">
+            <label>Platform / Source</label>
+            <input type="text" id="client-platform" placeholder="e.g. Instagram, Fiverr" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Contact (optional)</label>
+            <input type="text" id="client-contact" placeholder="Phone or email" />
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="client-cat">
+              <option value="editing">✂️ Editing</option>
+              <option value="website">🌐 Website</option>
+              <option value="reels">🎬 Reels</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="client-notes" placeholder="Any important details about this client..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('addClientModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addClient()">Add Client</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Payment Modal -->
+  <div class="modal-overlay" id="addPaymentModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>💰 Log Payment</h3>
+        <button class="modal-close" onclick="closeModal('addPaymentModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Client</label>
+            <select id="pay-client"><option value="">-- Select Client --</option></select>
+          </div>
+          <div class="form-group">
+            <label>Project</label>
+            <select id="pay-project"><option value="">-- Select Project --</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" id="pay-amount" placeholder="e.g. 3000" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="pay-status">
+              <option value="pending">⏳ Pending</option>
+              <option value="received">✅ Received</option>
+              <option value="partial">🔄 Partial</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Due Date</label>
+            <input type="date" id="pay-due" />
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <input type="text" id="pay-notes" placeholder="e.g. Advance paid ₹1000" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('addPaymentModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addPayment()">Log Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Plan Modal -->
+  <div class="modal-overlay" id="addPlanModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📅 Add Monthly Plan</h3>
+        <button class="modal-close" onclick="closeModal('addPlanModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Plan Title</label>
+            <input type="text" id="plan-title" placeholder="e.g. Deliver 10 reels for Alex" />
+          </div>
+          <div class="form-group">
+            <label>Week</label>
+            <select id="plan-week">
+              <option value="1">Week 1</option><option value="2">Week 2</option>
+              <option value="3">Week 3</option><option value="4">Week 4</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="plan-cat">
+              <option value="editing">✂️ Editing</option>
+              <option value="website">🌐 Website</option>
+              <option value="reels">🎬 Reels</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="plan-priority">
+              <option value="high">🔴 High</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('addPlanModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addPlan()">Add to Plan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Todo Modal -->
+  <div class="modal-overlay" id="addTodoModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>✅ Add Task</h3>
+        <button class="modal-close" onclick="closeModal('addTodoModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Task</label>
+          <input type="text" id="todo-text" placeholder="What needs to be done?" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="todo-cat">
+              <option value="editing">✂️ Editing</option>
+              <option value="website">🌐 Website</option>
+              <option value="reels">🎬 Reels</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="todo-priority">
+              <option value="high">🔴 High</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('addTodoModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addTodo()">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Detail Modal -->
+  <div class="modal-overlay" id="projectDetailModal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="detailProjectName">Project Details</h3>
+        <button class="modal-close" onclick="closeModal('projectDetailModal')">✕</button>
+      </div>
+      <div class="modal-body" id="projectDetailBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('projectDetailModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
