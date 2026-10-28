@@ -19,7 +19,7 @@ async function connectToDatabase() {
   }
 
   try {
-    const client = new MongoClient(uri);
+    const client = new MongoClient(uri, { serverSelectionTimeoutMS: 5000 });
     await client.connect();
     const db = client.db('livetodo');
 
