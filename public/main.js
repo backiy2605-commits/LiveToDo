@@ -958,24 +958,7 @@ async function loadConfig() {
     const res = await fetch('/api/config');
     if (res.ok) {
       appConfig = await res.json();
-      if (appConfig.googleClientId && typeof google !== 'undefined' && google.accounts) {
-        google.accounts.id.initialize({
-          client_id: appConfig.googleClientId,
-          callback: handleGoogleSignIn,
-          auto_prompt: false
-        });
-        const container = document.getElementById('gSigninContainer');
-        if (container) {
-          google.accounts.id.renderButton(container, {
-            type: 'standard',
-            theme: 'filled_black',
-            size: 'large',
-            text: 'signin_with',
-            shape: 'rectangular',
-            width: 320
-          });
-        }
-      }
+      initGoogleButton();
     }
   } catch (e) {
     // Local / static execution mode
