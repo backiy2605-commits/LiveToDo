@@ -3,10 +3,10 @@
   "version": "2.0.0",
   "description": "LiveToDo – Freelancer Command Center with Cloud Storage and Google Auth",
   "main": "index.html",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
-  },
+   "scripts": {
+     "start": "node dev-server.js",
+     "dev": "node dev-server.js"
+   },
   "dependencies": {
     "mongodb": "^6.5.0",
     "jsonwebtoken": "^9.0.2"
