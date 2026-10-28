@@ -1,11 +1,13 @@
-const { MongoClient } = require('mongodb');
 module.exports = async (req, res) => {
   const out = {
     hasMongoUri: !!process.env.MONGODB_URI,
     hasGoogleId: !!process.env.GOOGLE_CLIENT_ID,
-    hasJwt: !!process.env.JWT_SECRET
+    hasJwt: !!process.env.JWT_SECRET,
+    node: process.version
   };
   try {
+    const { MongoClient } = require('mongodb');
+    out.mongodbModule = 'loaded';
     const c = new MongoClient(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
     await c.connect();
     await c.db('livetodo').command({ ping: 1 });
