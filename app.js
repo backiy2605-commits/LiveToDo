@@ -940,6 +940,19 @@ function seedDemo() {
 }
 
 // ========== CONFIG LOADER ==========
+function initGoogleButton() {
+  if (!appConfig.googleClientId || typeof google === 'undefined' || !google.accounts) return;
+  if (window.__gInit) return;
+  window.__gInit = true;
+  google.accounts.id.initialize({
+    client_id: appConfig.googleClientId,
+    callback: handleGoogleSignIn
+  });
+  google.accounts.id.renderButton(document.getElementById('gSigninContainer'), {
+    type: 'standard', theme: 'filled_black', size: 'large', text: 'signin_with', width: 320
+  });
+}
+
 async function loadConfig() {
   try {
     const res = await fetch('/api/config');
